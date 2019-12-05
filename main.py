@@ -1,46 +1,27 @@
-import random
-import string
-from datetime import datetime
-
 from flask import Flask
-from flask import jsonify, request
-from flask_restful import Api, Resource
+from flask import jsonify
+from flask import request
 
 app = Flask(__name__)
-api = Api(app)
 
-tweets = {}
+tweets = {
+    '1': {
+        'content': 'hola'
+    },
+    '2': {
+        'content': 'chau'
+    },
+    '3': {
+        'content': 'aprobo?'
+    }
+}
 
-def generate_key():
-    return ''.join(random.choices(string.ascii_lowercase + string.digits, k=10))
-
-
-@api.resource('/')
-class TweetResource(Resource):
-
-    def get(self):
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if request.method == 'GET':
         return jsonify(tweets=tweets)
-    
-    def post(self):
-        key = generate_key()
-        content = request.json['content']
-        tweets[key] = dict(
-            content=content,
-            created_at=str(datetime.now())
-        )
-        return jsonify(status='Success', id=key, tweet=tweets[key])
-
-
-@api.resource('/<string:tweet_id>')
-class TweetIdResource(Resource):
-
-    def delete(self, tweet_id):
-        del tweets[tweet_id]
-        return jsonify(status='Success', id=tweet_id)
-
-    def get(self, tweet_id):
-        return tweets[str(tweet_id)]
-
+    if request.method == 'POST':
+        return 'Hola2'
 
 if __name__ == "__main__":
     app.run(debug=True)
